@@ -1,0 +1,26 @@
+version: "3.9"
+
+services:
+  factory:
+    build: .
+    container_name: paf_factory
+    restart: unless-stopped
+    volumes:
+      - .:/app
+      - /var/run/docker.sock:/var/run/docker.sock   # lets factory spawn sandbox containers
+      - factory_jobs:/app/factory_jobs
+      - factory_state:/app/factory_state
+      - factory_logs:/app/factory_logs
+    environment:
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID}
+      - MODEL=${MODEL:-claude-opus-4-5}
+      - MAX_RETRIES=${MAX_RETRIES:-6}
+      - USE_DOCKER=${USE_DOCKER:-true}
+    command: python main.py bot
+
+volumes:
+  factory_jobs:
+  factory_state:
+  factory_logs:

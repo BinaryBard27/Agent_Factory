@@ -1,0 +1,8 @@
+.env
+factory_jobs/
+factory_state/
+factory_logs/
+__pycache__/
+*.pyc
+.idea/
+.vscode/
