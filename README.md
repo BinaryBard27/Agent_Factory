@@ -1,3 +1,5 @@
+
+
 <div align="center">
 
 # 🏭 Personal Agentic Factory
@@ -92,6 +94,7 @@ docker-compose up -d
 | `/resume <task>` | Resume a stopped/crashed job. |
 | `/cancel <task>` | Clear state for a job and cancel it. |
 | `/help` | Show all available commands. |
+| `/start` | Show all available commands. |
 
 > **Pro Tip:** Simply send a standard text message with your idea, and the bot will automatically treat it as a `/build` request!
 
