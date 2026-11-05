@@ -2,7 +2,7 @@
 
 <div align="center">
 
-# 🏭 Personal Agentic Factory
+# 🏭 Personal Agentic Factory(PAF)
 
 **A local-first, multi-agent AI software factory that works for you 24/7.**
 <br />
