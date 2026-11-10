@@ -1,153 +1,116 @@
+ 🤖 Agent Factory
 
-
-<div align="center">
-
-# 🏭 Personal Agentic Factory(PAF)
-
-**A local-first, multi-agent AI software factory that works for you 24/7.**
-<br />
-*Text it a task from your phone. Come home to a fully working app on your machine.*
-
-[![Python](https://img.shields.io/badge/Python-3.11+-blue.svg?logo=python&logoColor=white)](https://python.org)
-[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED.svg?logo=docker&logoColor=white)](https://www.docker.com/)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Telegram](https://img.shields.io/badge/Bot-Telegram-2CA5E0.svg?logo=telegram&logoColor=white)](https://telegram.org/)
-
-</div>
+An autonomous multi-agent software engineering framework that plans, writes, tests, and self-corrects applications end-to-end within isolated Docker sandboxes, remotely controlled via Telegram.
 
 ---
 
-## ⚡ What is PAF?
+ 💡 Overview
 
-**Personal Agentic Factory (PAF)** is a highly autonomous, multi-agent system designed to build complete software projects from a single prompt. Unlike cloud-based agents, PAF runs **locally** on your machine, leveraging its state-recovery loop to survive crashes, internet drops, and API limits.
-
-Drop an idea in a Telegram message, and it orchestrates three distinct AI agents:
-1. 🧠 **The Architect** — Breaks your idea down into a technical specification and file plan.
-2. 💻 **The Coder** — Writes complete, production-ready code (no annoying placeholders).
-3. 🕵️ **The Auditor** — Runs the built code in a Docker sandbox, catches errors, and kicks failed code back to the Coder.
-
-When the job is done, the **Liaison** packages the finished software and texts it directly to your phone as a `.zip` archive.
+Agent Factory orchestrates a pipeline of specialized LLM agents working collaboratively to turn single-prompt specifications into fully executable, verified software packages. By isolating runtime execution inside containerized environments, Agent Factory safely tests AI-generated code, captures error output, and iteratively fixes bugs without risking the host system.
 
 ---
 
-## ✨ Key Features
+ ✨ Key Features
 
-- **📱 Remote Triggering:** Start jobs on your PC from anywhere in the world via Telegram.
-- **🔄 Auto-Retry & State Recovery:** Every step is safely checkpointed. If the process is interrupted, it resumes exactly where it left off. No lost progress, no wasted API credits.
-- **🛡️ Secure Sandboxing:** Uses Docker to build and run code safely, avoiding any local machine side-effects during testing.
-- **📂 Zero Placeholders:** The Coder is instructed strictly to provide full implementation.
-- **🚢 Zero-Config Deployment:** Ready to run natively via Python or 24/7 within a Docker Compose container.
+- 🏗️ Three-Agent Architecture: 
+  - Architect: Parses requests, defines component specs, and outlines project structure.
+  - Coder: Generates clean, production-ready codebase based on architectural blueprints.
+  - Auditor: Executes generated code inside a sandbox, evaluates output/tests, and feeds stack traces back to the Coder until the build passes.
+- 🐳 Isolated Docker Sandboxing: Runs untrusted AI-generated scripts in contained Docker environments to protect your host OS.
+- 📱 Telegram Bot Interface: Remote control center to trigger builds, track real-time agent logs, inspect progress, and receive finished apps directly as zipped artifacts.
+- 🔄 State Checkpointing & Fault Tolerance: Save-state mechanisms ensure interrupted jobs resume seamlessly from the last completed step instead of starting over.
 
 ---
 
-## 🚀 Quick Start
+ ⚙️ System Architecture  
 
-### 1. Prerequisites
-- Python 3.11+
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/) (optional, but highly recommended for sandboxing)
-- [Anthropic API key](https://console.anthropic.com)
-- Telegram bot token from [@BotFather](https://t.me/BotFather)
+              +-------------------+
+             |   Telegram Bot    |
+             +---------+---------+
+                       | User Prompt
+                       v
+             +-------------------+
+             | 1. Architect Agent|  (Builds Specifications)
+             +---------+---------+
+                       |
+                       v
+             +-------------------+
+             |  2. Coder Agent   |  (Generates Code Base)
+             +---------+---------+
+                       |
+                       v
+         +-------------+-------------+
+         |                           |
+         v                           v
+ +---------------+           +---------------+
+ | Docker        |  Success  |  Deliver Zip  |
+ | Sandbox Audit | --------> |  to Telegram  |
+ +-------+-------+           +---------------+
+         |
+         | Failure (Logs & Stack Trace)
+         v
+ (Returns to Coder for Self-Correction)
 
-### 2. Installation Setup
-Clone the repository and install the dependencies:
-```bash
-git clone https://github.com/BinaryBard27/Agent_Factory.git
-cd Agent_Factory
+---
 
-# Install dependencies
+ 🚀 Quickstart
+
+ Prerequisites
+
+- Python 3.10+
+- Docker Desktop installed and running
+- Anthropic API Key
+- Telegram Bot Token (via [@BotFather](https://t.me/BotFather))
+
+ Installation
+
+1. Clone the repository
+   bash
+   git clone [https://github.com/BinaryBard27/Agent_Factory.git](https://github.com/BinaryBard27/Agent_Factory.git)
+   cd Agent_Factory
+
+   Set up virtual environment
+
+Bash
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
+Configure Environment Variables
+Create a .env file in the root directory:
 
-# Start from the configuration template
-cp .env.example .env
-```
-*(Don't forget to fill in `.env` with your API keys!)*
+Code snippet
+ANTHROPIC_API_KEY=your_anthropic_api_key
+TELEGRAM_BOT_TOKEN=your_telegram_bot_token
+Run Agent Factory
 
-### 3. Connect Telegram
-To let the Liaison message your phone directly, you'll need your Chat ID. Message [@userinfobot](https://t.me/userinfobot) on Telegram, and it will reply with your ID. Add this into your `.env` file.
+Bash
+python main.py
+📱 Telegram Usage
+Start a chat with your Telegram Bot.
 
-### 4. Run the Factory
+Send /start to see available commands.
 
-**Option A — 🤖 Background Telegram Bot (Recommended)**
-```bash
-python main.py bot
-```
-*Leave this running in the background. Message your bot anytime to start a job!*
+Submit a feature or app prompt (e.g., "Build a FastAPI service for URL shortener with SQLite").
 
-**Option B — 💻 Direct CLI Usage**
-```bash
-python main.py build "build a CLI tool that fetches BTC and ETH prices"
-```
+Watch real-time build updates as the Architect, Coder, and Auditor collaborate.
 
-**Option C — 🐳 Docker Compose (24/7 Uptime Mode)**
-```bash
-docker-compose up -d
-```
+Download your complete codebase as a .zip archive directly in chat.
 
----
+🛠️ Project Structure
+Agent_Factory/
+├── agents/             # Architect, Coder, and Auditor definitions
+├── sandbox/            # Docker container orchestration & execution logic
+├── state/              # Checkpointing and job status management
+├── bot/                # Telegram API handlers & interface
+├── config.py           # Environment and app configuration
+├── main.py             # Main entry point
+├── requirements.txt    # Python dependencies
+└── README.md
+🛡️ Security Note
+All code generated by Agent Factory is executed inside an unprivileged Docker container with restricted network access and host volume mounting. This prevents accidental file overwrites or execution of malicious commands on your host environment.
 
-## 💬 Interacting with the Bot
+📄 License
+This project is licensed under the MIT License — see the LICENSE file for details.
 
-| Command | Action |
-| --- | --- |
-| `/build <task>` | Start a new software build job. |
-| `/status` | See the current progress of all active jobs. |
-| `/resume <task>` | Resume a stopped/crashed job. |
-| `/cancel <task>` | Clear state for a job and cancel it. |
-| `/help` | Show all available commands. |
-| `/start` | Show all available commands. |
 
-> **Pro Tip:** Simply send a standard text message with your idea, and the bot will automatically treat it as a `/build` request!
-
----
-
-## 💡 Example Tasks
-
-Need inspiration? Try sending these prompts:
-- *"Build a CLI crypto price tracker for BTC and ETH with 24h percentage changes."*
-- *"Write a Python script that monitors my Downloads folder and categorizes files by date."*
-- *"Build a web scraper that pulls daily top headlines from Hacker News and exports them to a CSV."*
-- *"Create a beautiful, terminal-based Pomodoro timer app with pausing and logging."*
-
----
-
-## 📂 Architecture & Project Structure
-
-Our core agents live in the `core/` directory and work sequentially:
-
-```text
-├── main.py                  ← Entry point (bot / CLI)
-├── config/                  ← Configuration management (.env parsing)
-├── core/
-│   ├── orchestrator.py      ← Factory workflow loop driver
-│   ├── architect.py         ← Agent 1: Spec Planning
-│   ├── coder.py             ← Agent 2: Code Synthesis
-│   ├── auditor.py           ← Agent 3: QA & Verification
-│   └── logger.py            ← Unified robust logging
-├── bots/                    ← Bot interfaces (Telegram built-in)
-├── liaison/                 ← File shipping & system notifications
-├── state/                   ← Bulletproof JSON state checkpoints
-├── factory_jobs/            ← Finished, zipped projects land here
-├── factory_state/           ← Hidden checkpoint progress trackers
-└── docker-compose.yml       ← Full infrastructure deployment
-```
-
----
-
-## ⚙️ Configuration Reference (`.env`)
-
-| Variable | Requirement | Description |
-|---|---|---|
-| `ANTHROPIC_API_KEY` | required | Your Anthropic key for the Claude LLM engine. |
-| `TELEGRAM_BOT_TOKEN` | required | Used for receiving messages (from @BotFather). |
-| `TELEGRAM_CHAT_ID` | required | Your personal ID, so nobody else can message your bot. |
-| `MODEL` | optional | Default: `claude-opus-4-5` or similar. Adjust for speed/cost. |
-| `MAX_RETRIES` | optional | Max loop iterations between Coder ↔️ Auditor (Default: `6`). |
-| `USE_DOCKER` | optional | True/False. Run generated code in a secure Docker sandbox. |
-| `SANDBOX_TIMEOUT` | optional | Seconds before force-killing a rogue script (Default: `60`). |
-
----
-
-## 🤝 Contributing
-Contributions, opened issues, and pull requests are welcome! If you devise a new Agent (`Security Reviewer`, `UI/UX Designer`), feel free to open a PR.
-
-> **Warning:** Generated apps run best when `USE_DOCKER=true` is set. The internal Auditor agent leverages Docker to natively test scripts without installing dependencies on your host machine.
+ 
